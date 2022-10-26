@@ -7,7 +7,7 @@ from datetime import datetime
 class BoursoramaSpider(scrapy.Spider):
     name = 'boursorama'
     allowed_domains = ['www.boursorama.com']
-    start_urls = ['https://www.boursorama.com/bourse/actions/palmares/france/']
+    start_urls = [f'https://www.boursorama.com/bourse/actions/palmares/france/page-{n}' for n in range(0, 3)]
 
     def start_requests(self):
         for url in self.start_urls:
