@@ -2,6 +2,7 @@ import scrapy
 from scrapy import Request
 from WebCrawler.items import ReviewsBoursoramaItem
 import mysql.connector as mc
+from datetime import datetime
 
 class BoursoramaSpider(scrapy.Spider):
     name = 'boursorama'
@@ -54,6 +55,12 @@ class BoursoramaSpider(scrapy.Spider):
                 item['volume'] = indice.css('span.c-instrument::text').extract()[5]
             except:
                 item['volume'] = 'None'
+
+            # Date de la collecte
+            try:
+                item['time'] = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
+            except:
+                item['time'] = 'None'
                 
             db = mc.connect(
                 host="localhost",
@@ -64,8 +71,8 @@ class BoursoramaSpider(scrapy.Spider):
 
             cursor = db.cursor()
 
-            sql = "INSERT INTO `webscraping`.`boursorama` (`high`, `last`, `low`, `name`, `open`, `variation`, `volume`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            val = (item['high'], item['last'], item['low'], item['name'], item['open'], item['variation'], item['volume'])
+            sql = "INSERT INTO `webscraping`.`boursorama` (`high`, `last`, `low`, `name`, `open`, `variation`, `volume`, `time`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (item['high'], item['last'], item['low'], item['name'], item['open'], item['variation'], item['volume'], item['time'])
             cursor.execute(sql, val)
             db.commit()
 

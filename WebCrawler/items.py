@@ -31,5 +31,6 @@ class ReviewsBoursoramaItem(scrapy.Item):
     high = scrapy.Field()
     low = scrapy.Field()
     volume = scrapy.Field()
+    time = scrapy.Field()
     
     pass
