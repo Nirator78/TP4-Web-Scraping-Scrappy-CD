@@ -13,7 +13,7 @@ class BoursoramaSpider(scrapy.Spider):
             yield Request(url=url, callback=self.parse)
     
     def parse(self, response):
-        liste_indice = response.css('tr.c-table__row')
+        liste_indice = response.css('tbody.c-table__body').css('tr.c-table__row')
         
         # Boucle qui parcours l'ensemble des éléments de la liste des indices
         for indice in liste_indice:
@@ -54,5 +54,19 @@ class BoursoramaSpider(scrapy.Spider):
                 item['volume'] = indice.css('span.c-instrument::text').extract()[5]
             except:
                 item['volume'] = 'None'
-            
+                
+            db = mc.connect(
+                host="localhost",
+                user="root",
+                password="Azerty94",
+                database="webscraping"
+            )
+
+            cursor = db.cursor()
+
+            sql = "INSERT INTO `webscraping`.`boursorama` (`high`, `last`, `low`, `name`, `open`, `variation`, `volume`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            val = (item['high'], item['last'], item['low'], item['name'], item['open'], item['variation'], item['volume'])
+            cursor.execute(sql, val)
+            db.commit()
+
             yield item
